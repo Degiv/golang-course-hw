@@ -9,6 +9,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -134,8 +135,8 @@ func idOk(id interface{}) bool {
 	case string:
 		return true
 	case float64:
-		_, err := strconv.Atoi(fmt.Sprint(id))
-		return err == nil
+		isInt := !strings.Contains(fmt.Sprint(id.(float64)), ".")
+		return isInt
 	default:
 		return false
 	}
