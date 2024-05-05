@@ -12,30 +12,15 @@ import (
 	"time"
 )
 
-type operationType int
+type operationType string
 
 const (
-	zeroValue operationType = iota
-	income
-	outcome
-	plus
-	minus
+	zeroValue operationType = ""
+	income    operationType = "income"
+	outcome   operationType = "outcome"
+	plus      operationType = "+"
+	minus     operationType = "-"
 )
-
-func String(ot operationType) string {
-	switch ot {
-	case income:
-		return "income"
-	case outcome:
-		return "outcome"
-	case plus:
-		return "+"
-	case minus:
-		return "-"
-	default:
-		return ""
-	}
-}
 
 type Operation struct {
 	Type      string      `json:"type"`
@@ -126,13 +111,13 @@ func getFilePath() string {
 
 func parseOperationType(operationType string) (operationType, bool) {
 	switch operationType {
-	case String(income):
+	case string(income):
 		return income, true
-	case String(outcome):
+	case string(outcome):
 		return outcome, true
-	case String(plus):
+	case string(plus):
 		return plus, true
-	case String(minus):
+	case string(minus):
 		return minus, true
 	default:
 		return zeroValue, false
@@ -145,7 +130,15 @@ func parseValue(value interface{}) (int, bool) {
 }
 
 func idOk(id interface{}) bool {
-	return id != nil
+	switch id.(type) {
+	case string:
+		return true
+	case float64:
+		_, err := strconv.Atoi(fmt.Sprint(id))
+		return err == nil
+	default:
+		return false
+	}
 }
 
 func dateOk(createdAt string) bool {
