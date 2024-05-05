@@ -93,10 +93,8 @@ func (cs *CompanySummary) update(operation CompanyOperation) {
 }
 
 func getPathFromStdin() string {
-	failPath, err := io.ReadAll(os.Stdin)
-	if err != nil {
-		log.Fatal(err)
-	}
+	failPath, _ := io.ReadAll(os.Stdin)
+
 	if failPath == nil {
 		return ""
 	}
@@ -105,20 +103,25 @@ func getPathFromStdin() string {
 }
 
 func getPathFromENV() string {
-	filePath, ok := os.LookupEnv("FILE")
-	if !ok {
-		return getPathFromStdin()
-	}
+	filePath, _ := os.LookupEnv("FILE")
 	return filePath
 }
 
 func getFilePath() string {
-	var filePath *string = flag.String("file", "", "Path to file")
+	var filePathPtr *string = flag.String("file", "", "Path to file")
 	flag.Parse()
-	if *filePath == "" {
-		return getPathFromENV()
+	filePath := *filePathPtr
+	if filePath != "" {
+		return filePath
 	}
-	return *filePath
+
+	filePath = getPathFromENV()
+	if filePath != "" {
+		return filePath
+	}
+
+	filePath = getPathFromStdin()
+	return filePath
 }
 
 func parseOperationType(operationType string) (operationType, bool) {
